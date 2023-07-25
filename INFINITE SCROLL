@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>Infinite Scroll</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+    <body>
+        <div id="quotes-container"></div>
+        <script src="scroll.js">         
+        </script>
+    </body>
+</html>
+
+----JAVASCRIPT---
+
+$(document).ready(function(){
+    const quotesAPI = "https://type.fit/api/quotes";
+    let currentIndex = 0;
+    const quotesPerLoad = 30;
+    function loadMoreQuotes(){
+        $.getJSON(quotesAPI, function(data){
+            let quotesHTML = "";
+            for(let i = currentIndex; i < currentIndex+quotesPerLoad;i++){
+                if(!data[i]){
+                    break;
+                }
+                quotesHTML += `<p><strong>Quote ${i+1}:</strong>${data[i].text} - <em>${data[i].author || "Unknown"}</em></p>`;
+            }
+            currentIndex += quotesPerLoad;
+            $("#quotes-container").append(quotesHTML);
+        });
+    }
+    loadMoreQuotes();
+    $(window).scroll(function(){
+        if($(window).scrollTop()+$(window).height() >= $(document).height() - 50){
+            loadMoreQuotes();
+        }
+    });
+});
